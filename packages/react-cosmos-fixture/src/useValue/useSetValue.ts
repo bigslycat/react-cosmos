@@ -14,6 +14,7 @@ export function useSetValue<T extends FixtureStateValueType>(
   defaultValue: T
 ): SetValue<T> {
   const { setFixtureState } = React.useContext(FixtureContext);
+  const defaultValueCache = React.useMemo(() => defaultValue, []);
   return React.useCallback(
     stateChange => {
       setFixtureState(prevFsState => {
@@ -26,7 +27,7 @@ export function useSetValue<T extends FixtureStateValueType>(
                 getCurrentValueFromFixtureState(
                   prevFsState,
                   inputName,
-                  defaultValue
+                  defaultValueCache
                 ) as T
               )
             : stateChange;
@@ -35,14 +36,14 @@ export function useSetValue<T extends FixtureStateValueType>(
           values: {
             ...prevFsState.values,
             [inputName]: {
-              defaultValue: createValue(defaultValue),
+              defaultValue: createValue(defaultValueCache),
               currentValue: createValue(currentValue)
             }
           }
         };
       });
     },
-    [setFixtureState, defaultValue, inputName]
+    [setFixtureState, defaultValueCache, inputName]
   );
 }
 
